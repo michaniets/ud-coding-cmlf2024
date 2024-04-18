@@ -62,7 +62,6 @@ dobj=clit-12	V -[re"obj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=
 dobj=pro	V -[re"obj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]
 dobj=lex	V -[re"obj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos<>re"PRO.*"]
 #
-# --- TODO 
 iobj=clit-3	V -[iobj]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]; C [form=re"[lL].*"]
 iobj=clit-12	V -[iobj]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]; C [form=re"[mtnvMTNV].*"]
 iobj=pro	V -[iobj]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]
@@ -100,5 +99,4 @@ refl=3other	V -[re".*"]-> C; C [lemma="se"]; C [form=re"[sS].*"]
 refl=12	V -[re"expl:.*"]-> C; C [lemma<>"se"]|[lemma<>"s'"]
 #
 # STOP
-# adjectival clause
-acl=1	C -[acl]-> V
+# (nothing is processed after STOP)
