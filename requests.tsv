@@ -1,0 +1,104 @@
+# ATT=VALUE	PATTERN	WITHOUT
+# ^^^^^^^^^^^^^^^^^^ first line: column declarations for Visual Code Editor
+# ------------------------
+# AS 3.4.24
+# ------------------------
+# Examples from the documentation:
+# either a past particle verb or an adjective
+#    N [upos=VERB, VerbForm=Part, Tense=Past]|[upos=ADJ]
+# A node with either a upos ADV (and no ExtPos) or an ExtPos ADV
+#    N [upos=ADV, !ExtPos]|[ExtPos=ADV]
+# ------------------------
+# HOW TO USE:
+# - Respect the 3-column format with TAB separators:
+#   - col 1: attribute=value
+#   - col 1: Grew Pattern
+#   - col 3: Grew Without Pattern (optional)
+# - Use Patterns and Without statements as documented for grew
+# - Use "V" for the reference node (normally the verb). The script relies on one node being "V"
+# - Use "C" for the dependent node and --keep_target_node_info to include the second node in the coding
+# - the verb node is constrained by its categroy:  V [upos="VERB", !xpos]|[xpos=re"V.*"]
+#     where VER.* is for Cattex pos and V.* for HOPS output
+# - regular expressions don't support '|' within the regex. disjunction must be applied at feature level   
+# - Use --first_rule to stop rule application for an attribute after first match (CorpusSearch behaviour)
+# - Avoid 'null' as value because it is read as 'NaN' and not as string on input.
+# ------------------------
+#
+# type of clause
+clause=main	N -["root"]-> V; V [upos="VERB", !xpos]|[xpos=re"V.*"]
+clause=main_modal	N -["xcomp"]-> V; V [upos="VERB", !xpos]|[xpos=re"V.*"]
+clause=sub_acl	N -["acl"]-> V; V [upos="VERB", !xpos]|[xpos=re"V.*"]
+clause=sub_advcl	N -["advcl"]-> V; V [upos="VERB", !xpos]|[xpos=re"V.*"]
+clause=conj	N -["conj"]-> V; V [upos="VERB", !xpos]|[xpos=re"V.*"]
+#
+#            rule depends on xpos
+clause=sub_rel	V -[re".*"]-> P; V [upos="VERB", !xpos]|[xpos=re"V.*"]; P [xpos="PROrel"]
+#
+# type of verb
+verb=fin	V [xpos=re"VERcjg"]|[xpos=re"VJ"]
+verb=inf	V [xpos=re"VERinf"]|[xpos=re"V[XGP]"]
+verb=NA	V [upos="VERB", !xpos]
+#
+# subject: check which functions can be subtyped (iobj:caus)
+subj=trace	V -[re"nsubj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*", form=re"(les?)?qu[ei]l?(le)?s?"]|[xpos=re"WPRO"]
+subj=pro	V -[re"nsubj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]
+subj=lex	V -[nsubj]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos<>re"PRO.*"]
+subj=0	V [upos="VERB", !xpos]|[xpos=re"V.*"]	V -[nsubj]-> C
+#
+# copular verbs
+subj=0	C -[cop]-> V; V [upos="VERB", !xpos]|[xpos=re"V.*"]	C -[nsubj]-> S
+subj=predpro	C -[cop]-> V; C -[nsubj]-> S; V [upos="AUX"]|[upos="VERB", !xpos]|[xpos=re"V.*"]; S [upos=re"PRO.*"]
+subj=predlex	C -[cop]-> V; C -[nsubj]-> S; V [upos="AUX"]|[upos="VERB", !xpos]|[xpos=re"V.*"]; S [upos<>re"PRO.*"]
+subj=predtrace	C -[cop]-> V; C -[nsubj]-> S; V [upos="AUX"]|[upos="VERB", !xpos]|[xpos=re"V.*"]; S [upos=re"PRO.*", form=re"(les?)?qu[ei]l?(le)?s?"]|[xpos=re"WPRO"]
+#
+# passive 
+subj=passpro	V -[re"nsubj.*"]-> C; V -[aux:pass]-> AUX; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]
+subj=passlex	V -[re"nsubj.*"]-> C; V -[aux:pass]-> AUX; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos<>re"PRO.*"]
+pass=1	V -[nsubj:pass]-> C
+#
+# objects: there are subtypes like obj:lvc
+dobj=clit-3	V -[re"obj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]; C [form=re"[lL].*"]
+dobj=clit-12	V -[re"obj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]; C [form=re"[mtnvMTNV].*"]
+dobj=pro	V -[re"obj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]
+dobj=lex	V -[re"obj.*"]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos<>re"PRO.*"]
+#
+# --- TODO 
+iobj=clit-3	V -[iobj]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]; C [form=re"[lL].*"]
+iobj=clit-12	V -[iobj]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]; C [form=re"[mtnvMTNV].*"]
+iobj=pro	V -[iobj]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C [upos=re"PRO.*"]
+iobj=lex	V -[re"obl.*"]-> N; V [upos="VERB", !xpos]|[xpos=re"V.*"]; N -["case"]-> P; P [lemma="à.le"]
+#
+# prepositional complement (!! lexical IO are obl:arg, datives as well as locatives!!)
+pobj_mod=pro	V -[obl:mod]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos=re"PRO.*"]
+pobj_mod=lex	V -[obl:mod]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos<>re"PRO.*"]
+pobj_arg=pro	V -[obl:arg]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos=re"PRO.*"]
+pobj_arg=lex	V -[obl:arg]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos<>re"PRO.*"]
+pobj_agent=pro	V -[obl:agent]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos=re"PRO.*"]
+pobj_agent=lex	V -[obl:agent]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos<>re"PRO.*"]
+pobj_other=pro	V -[^obl:agent|obl:arg|obl:mod]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos=re"PRO.*"]
+pobj_other=lex	V -[^obl:agent|obl:arg|obl:mod]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[case]-> P; C [upos<>re"PRO.*"]
+#
+# clausal objects
+cpobj=que	V -[ccomp]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[mark]-> P; P [form=re"[Qq].*"]
+cpobj=other	V -[ccomp]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]
+ipobj=de	V -[xcomp]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[mark]-> P; P [form=re"[Dd].*"]
+ipobj=a	V -[xcomp]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]; C -[mark]-> P; P [form=re"[àÀA].*"]
+ipobj=other	V -[xcomp]-> C; V [upos="VERB", !xpos]|[xpos=re"V.*"]
+#
+# copula: the predicative complement is root. root dominates cop and nsubj
+dobj=pred	C -[cop]-> V
+# subj=pred	C -[cop]-> V; C -[nsubj]-> S
+#
+# ----  auxiliary
+# aux=sister	V -[aux:tense]-> A; V -[aux:pass]-> B
+aux=avoir	V -[aux:tense]-> AUX; AUX [lemma="avoir"]
+aux=estre	V -[aux:tense]-> AUX; AUX [lemma="être"]
+#
+# ---- reflexive    some may be tagged as obl.*
+refl=3	V -[re"expl:.*"]-> C; C [lemma="se"]|[form=re"[sS].*"]
+refl=3other	V -[re".*"]-> C; C [lemma="se"]; C [form=re"[sS].*"]
+refl=12	V -[re"expl:.*"]-> C; C [lemma<>"se"]|[lemma<>"s'"]
+#
+# STOP
+# adjectival clause
+acl=1	C -[acl]-> V
