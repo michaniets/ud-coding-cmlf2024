@@ -17,7 +17,7 @@ Check my other repositories for updated versions of the script.
 
 If the parsed files are in the sub-folder hopsed:
 
-````
+```{bash}
 cd hopsed
 for i in *.conllu
 do
