@@ -1,7 +1,7 @@
 # ATT=VALUE	PATTERN	WITHOUT
 # ^^^^^^^^^^^^^^^^^^ first line: column declarations for Visual Code Editor
 # ------------------------
-# AS 3.4.24
+# AS 18.4.24
 # ------------------------
 # Examples from the documentation:
 # either a past particle verb or an adjective
@@ -16,7 +16,7 @@
 #   - col 3: Grew Without Pattern (optional)
 # - Use Patterns and Without statements as documented for grew
 # - Use "V" for the reference node (normally the verb). The script relies on one node being "V"
-# - Use "C" for the dependent node and --keep_target_node_info to include the second node in the coding
+# - Use any node for the dependent node and --keep_target_node_info to include the second node in the coding
 # - the verb node is constrained by its categroy:  V [upos="VERB", !xpos]|[xpos=re"V.*"]
 #     where VER.* is for Cattex pos and V.* for HOPS output
 # - regular expressions don't support '|' within the regex. disjunction must be applied at feature level   
